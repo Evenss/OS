@@ -23,43 +23,44 @@ int getNumber(char cmdStr[])
 
 void runCmd(int num)
 {
+	pid_t pid;
 	int execl_status=-1;
-	switch(num){
-		case 1:
-			execl("./cmd1","cmd1",NULL);
-			break;
-		case 2:
-			execl("./cmd2","cmd1",NULL);
-			break;
-		case 3:
-			execl("./cmd3","cmd1",NULL);
-			break;
-		case -1:
-			printf("Command not found\n");
-			break;
+	if((pid=fork())<0)//必须在这里fork
+		printf("fork error\n");
+	else if(pid==0){
+		switch(num){
+			case 1:
+				execl("./cmd1","cmd1",NULL);
+				break;
+			case 2:
+				execl("./cmd2","cmd1",NULL);
+				break;
+			case 3:
+				execl("./cmd3","cmd1",NULL);
+				break;
+			case -1:
+				printf("Command not found\n");
+				break;
 				
-	}	
+		}
+	}
+	
 }
 
 int main()
 {	
 	char cmdStr[20];
-	int num;
+	int num,x;
 	pid_t pid;
 	memset(cmdStr,0,sizeof(cmdStr));
 	while(1){
 		scanf("%s",cmdStr);
 		num=getNumber(cmdStr);
-		printf("%d\n",num);
-		if((pid=fork())<0)
-			printf("fork error\n");
-		else if(pid==0)
+		if(num!=0)
+			runCmd(num);
+		else
 		{
-			if(num!=0)
-				runCmd(num);
-			else
-				exit(0);
+			exit(0);
 		}
-		wait(0);
 	}
 }
