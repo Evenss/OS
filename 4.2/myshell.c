@@ -33,10 +33,10 @@ void runCmd(int num)
 				execl("./cmd1","cmd1",NULL);
 				break;
 			case 2:
-				execl("./cmd2","cmd1",NULL);
+				execl("./cmd2","cmd2",NULL);
 				break;
 			case 3:
-				execl("./cmd3","cmd1",NULL);
+				execl("./cmd3","cmd3",NULL);
 				break;
 			case -1:
 				printf("Command not found\n");
