@@ -23,10 +23,12 @@
    	retval: 用户定义的指针，用来存储被等待线程的返回值。
 
 4. int msgget(key_t, key, int msgflg|IPC_CREAT);
+	key非0在msgque向量表中找出键值为key的消息队列
    	该函数用来创建和访问一个消息队列，失败返回-1
    	msgflg表示消息队列的访问权限；IPC_CREAT表示当key所命名的消息队列不存在时创建一个消息队列，否则忽略。
 
    int msgsnd(int msgid, const void *msgp, size_t msgsz, int msgflg);	将一个新的消息写入队列
+	msgp：指向消息缓冲区的指针，此位置用来暂时存储发送和接收的消息
 	msgflg：这个参数依然是是控制函数行为的标志，
 		0,表示忽略；
          	IPC_NOWAIT，如果消息队列为空，则返回一个ENOMSG，并将控制权交回调用函数的进程。
@@ -37,10 +39,22 @@
           	如果不指定这个参数，E2BIG 将被返回，而消息则留在队列中不被取出。
 
    ssize_t msgrcv(int msgid, void *msgp, size_t msgsz, long msgtyp, int msgflg);	从消息队列中读取消息
+	msgtyp等于0 则返回队列的最早的一个消息。
+	msgtyp大于0，则返回其类型为mtype的第一个消息。
+	msgtyp小于0,则返回其类型小于或等于mtype参数的绝对值的最小的一个消息。
+
+   int msgctl (int msqid, int cmd, struct msqid_ds *buf)	删除消息队列
+	msqid：为消息队列的qid
+	cmd：为该函数要对消息队列执行的操作
+		IPC_STAT：该命令用来获取消息队列信息，返回的信息存贮在buf指向的msqid结构中；
+		IPC_SET：该命令用来设置消息队列的属性，要设置的属性存储在buf指向的msqid结构中；
+		IPC_RMID：删除msqid标识的消息队列；
+	buf：消息队列msqid_ds结构体指针
 
 5. key_t 最后返回也是int
 
 6. stdin 标准输入，从键盘输入到缓冲区里的东西
+   stderr标准输出，输出到屏幕上
 
 7. #ifndef BUFSIZ	//在stdio.h
     define BUFSIZ _IO_BUFSIZ
@@ -51,7 +65,3 @@
 8. strncmp()
    首先将s1 第一个字符值减去s2 第一个字符值，若差值为0 则再继续比较下个字符，直到字符结束标志'\0'，若差值不为0，则将差值返回。
 
-9. msg_type：消息类型
-	等于0 则返回队列的最早的一个消息
-	大于0 则返回其类型为msg_type的第一个消息
-	小于0 则返回其类型小于或等于msg_type参数的绝对值的最小的一个消息。

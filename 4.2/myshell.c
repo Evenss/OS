@@ -24,22 +24,23 @@ int getNumber(char cmdStr[])
 void runCmd(int num)
 {
 	pid_t pid;
-	int execl_status=-1;
-	if((pid=fork())<0)//必须在这里fork
+	if((pid=fork())<0)//fork new process
 		printf("fork error\n");
 	else if(pid==0){
 		switch(num){
 			case 1:
-				execl("./cmd1","cmd1",NULL);
+				execlp("./cmd1",NULL);
 				break;
 			case 2:
-				execl("./cmd2","cmd2",NULL);
+				execlp("./cmd2",NULL);
 				break;
 			case 3:
-				execl("./cmd3","cmd3",NULL);
+				execlp("./cmd3",NULL);
 				break;
 			case -1:
 				printf("Command not found\n");
+				break;
+			default:
 				break;
 				
 		}

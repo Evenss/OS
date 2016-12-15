@@ -22,17 +22,18 @@ int main()
 {
 	int fd[2];//0--read 1--write
 	int pid1,pid2,pid3,num;
-	char cache[MAXVALUE];//array store info
+	char cache[MAXVALUE];
 	if(pipe(fd)<0){
 		printf("Create pipe failed\n");
+		return 0;
 	}
 	while((pid1=fork())==-1);//fork success
 	if(pid1==0){//child process
 		printf("In child1 process...Write 'Child1'\n");
 		close(fd[0]);
 		write(fd[1],"Child1 ",7);
-		sleep(3);//3 s
-		exit(0);
+		sleep(3);
+		exit(0); 
 	}
 	else if(pid1>0){
 		while((pid2=fork())==-1);
@@ -52,15 +53,15 @@ int main()
 				exit(0);
 			}
 			else{
-				printf("In parent process\n");
-				close(fd[1]);
 				wait(0);//wait for child end
+				close(fd[1]);
+				printf("In parent process\n");
 				printf("First read 14 type\n");
 				num =read(fd[0],cache,14);
 				output(num,cache);
 				
-				printf("Second read 7 type\n");
-				num =read(fd[0],cache,7);
+				printf("Second read 14 type\n");
+				num =read(fd[0],cache,14);
 				output(num,cache);
 				
 				printf("Third read 7 type\n");
