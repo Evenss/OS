@@ -52,7 +52,9 @@ int main(){
 		shared->written = 0;
 		if(strncmp(shared->text, "end", 3) == 0) {
 			strncpy(shared->text,"over",TEXT_SZ);			
-			printf("Now is %s\n",shared->text);			
+			printf("Now is %s\n",shared->text);
+			sem_unlink("vik1");//del sem file
+			sem_unlink("vik2");
 			running = 0;
 		}		
 		sem_post(sem1);

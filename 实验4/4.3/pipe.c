@@ -20,7 +20,7 @@ void output(int num,char cache[])
  
 int main()
 {
-	int fd[2];//0--read 1--write
+	int fd[2];//0-read 1-write
 	int pid1,pid2,pid3,num;
 	char cache[MAXVALUE];
 	if(pipe(fd)<0){
@@ -28,7 +28,7 @@ int main()
 		return 0;
 	}
 	while((pid1=fork())==-1);//fork success
-	if(pid1==0){//child process
+	if(pid1==0){
 		printf("In child1 process...Write 'Child1'\n");
 		close(fd[0]);
 		write(fd[1],"Child1 ",7);

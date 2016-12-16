@@ -1,0 +1,29 @@
+1.perm——指代操作权限(权限掩码),该参数在sysfs文件系统中所对应的文件节点的属性;
+如果perm设为0，表示没有sysfs项,否则取值0444表示完全可读，取0644表示root具有可写权限
+
+2.module_param()函数中的参数文件放在/sys/module/模块名称/parameters/里面
+
+3.对链表的操作在 /usr/src/内核版本号/include/linux/list.h
+
+4.
+TASK_RUNNING	表示进程要么正在执行，要么正要准备执行。
+
+TASK_INTERRUPTIBLE	表示进程被阻塞（睡眠），直到某个条件变为真。条件一旦达成，进程的状态就被设置为TASK_RUNNING。
+
+TASK_UNINTERRUPTIBLE	的意义与TASK_INTERRUPTIBLE类似，除了不能通过接受一个信号来唤醒以外。
+
+__TASK_STOPPED	表示进程被停止执行。
+
+__TASK_TRACED	表示进程被debugger等进程监视。
+
+EXIT_DEAD	表示进程的最终状态。
+
+EXIT_ZOMBIE	表示进程的执行被终止，但是其父进程还没有使用wait()等系统调用来获知它的终止信息。
+
+5.
+ ① prio指的是任务当前的动态优先级，其值影响任务的调度顺序。
+ ② normal_prio指的是任务的常规优先级，该值基于static_prio和调度策略计算。
+ ③ static_prio指的是任务的静态优先级，在进程创建时分配，该值会影响分配给任务的时间片的长短和非实时任务动态优先级的计算。
+
+6.comm 进程正在运行的可执行文件的文件名。
+
