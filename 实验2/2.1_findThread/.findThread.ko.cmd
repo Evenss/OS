@@ -1,1 +1,0 @@
-cmd_/root/module/findThread/findThread.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /root/module/findThread/findThread.ko /root/module/findThread/findThread.o /root/module/findThread/findThread.mod.o
