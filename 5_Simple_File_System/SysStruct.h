@@ -19,7 +19,7 @@ using namespace std;
 // 文件控制块
 typedef struct FCB {
 	char filename[8];           // 文件名
-	char exname[10];             // 文件扩展名
+	char exname[5];             // 文件扩展名
 	unsigned char attribute;    // 文件属性字段,值为0时表示目录文件，值为1时表示数据文件
 	unsigned short time;        // 文件创建时间
 	unsigned short date;        // 文件创建日期
@@ -36,7 +36,7 @@ typedef struct FAT {
 // 用户打开文件表
 typedef struct USEROPEN {
 	char filename[8];           // 文件名
-	char exname[10];             // 文件扩展名
+	char exname[5];             // 文件扩展名
 	unsigned char attribute;    // 文件属性字段
 	unsigned short time;        // 文件创建时间
 	unsigned short date;        // 文件创建日期
@@ -64,7 +64,7 @@ unsigned char *myvhard;             // 指向虚拟磁盘的起始地址
 useropen openfilelist[MAXOPENFILE]; // 用户打开文件表数组
 int currfd;                         // 记录当前用户打开文件表项的下标
 unsigned char *startp;              // 记录虚拟磁盘上数据区开始位置
-char *FileName = "FileSys.txt";
+const char *FileName = "FileSys.txt";
 unsigned char buffer[SIZE];
 
 void startSys();

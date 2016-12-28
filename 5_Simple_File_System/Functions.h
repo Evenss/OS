@@ -84,7 +84,7 @@ void startSys()
 
 	currfd = 0;
 	block0 *startBlock;
-	startBlock = (block0*)myvhard;//////////////////////
+	startBlock = (block0*)myvhard;
 	startp = startBlock->startblock;
 	
 	return;
@@ -96,7 +96,7 @@ void my_format()
 	block0 *startBlock;
 	startBlock = (block0*)myvhard;
 	strcpy(startBlock->magic_number, "10101010");
-	strcpy(startBlock->information,"简单文件系统\n分配方式：FAT\n磁盘空间管理：结合FAT的位示图\n目录结构：单用户多级目录\n");
+	strcpy(startBlock->information,"简单文件系统\n分配方式：FAT\n 目录结构：单用户多级目录\n");
 	startBlock->root = 5;
 	startBlock->startblock = myvhard + 5 * BLOCKSIZE;
 	
@@ -119,11 +119,11 @@ void my_format()
 	root1->first = 5;
 	root1->length = 2 * sizeof(fcb);
 	root1->free = 1;
-	time_t rawTime = time(NULL);//???????????????
-	struct tm *time = localtime(&rawTime);
+	time_t rawTime = time(NULL);//get second
+	struct tm *time = localtime(&rawTime);//change to data
 	root1->time = time->tm_hour * 2048 + time->tm_min * 32 + time->tm_sec / 2;
 	root1->date = (time->tm_year - 100) * 512 + (time->tm_mon + 1) * 32 + (time->tm_mday);
-
+	cout << time->tm_year << endl;
 	fcb *root2 = root1 + 1;
 	memcpy(root2, root1, sizeof(fcb));
 	strcpy(root2->filename, "..");
@@ -214,7 +214,7 @@ void my_mkdir(char *dirname)
 	fcbTmp->first = blockNum;
 	fcbTmp->length = 2*sizeof(fcb);
 	fcbTmp->free = 1;
-	time_t rawtime = time(NULL);//////////////////////////////////把这里提取出来
+	time_t rawtime = time(NULL);
 	struct tm* time = localtime(&rawtime);
 	fcbTmp->date = (time->tm_year - 100) * 512 + (time->tm_mon + 1) * 32 + (time->tm_mday);
 	fcbTmp->time = (time->tm_hour) * 2048 + (time->tm_min) * 32 + (time->tm_sec) / 2;
@@ -244,7 +244,7 @@ void my_mkdir(char *dirname)
 	memcpy(fcbTmp2, fcbTmp, sizeof(fcb));
 	strcpy(fcbTmp2->filename, "..");
 	strcpy(fcbTmp2->exname, "d");
-	fcbTmp2->first = openfilelist[currfd].first;//????????????????????????这里为什么要用currfd
+	fcbTmp2->first = openfilelist[currfd].first;
 	fcbTmp2->length = openfilelist[currfd].length;
 	fcbTmp2->date = openfilelist[currfd].date;
 	fcbTmp2->time = openfilelist[currfd].time;
@@ -253,7 +253,7 @@ void my_mkdir(char *dirname)
 	//back father directory
 	my_close(fd);
 	
-	//update currfd's fcb
+	//update currfd's fcb  
 	fcbPtr = (fcb*)buf;
 	fcbPtr->length = openfilelist[currfd].length;
 	openfilelist[currfd].count = 0;
@@ -304,16 +304,13 @@ void my_rmdir(char *dirname)
 		return;
 	}
 
-	//check open
-	//////////////////////////////////////////没有检查是否打开
-
-	//clear using block
+	//clear using fcb
 	int blockNum = fcbPtr->first;
 	fat* fat1 = (fat*)(myvhard + BLOCKSIZE);
 	int next = 0;
 	while (true) {
 		next = fat1[blockNum].id;
-		fat1[blockNum].id = END;
+		fat1[blockNum].id = FREE;
 		if (next != END) {
 			blockNum = next;
 		}
@@ -336,7 +333,7 @@ void my_rmdir(char *dirname)
 	do_write(currfd, (char*)fcbPtr, sizeof(fcb), 1);
 	openfilelist[currfd].length -= sizeof(fcb);
 
-	//update . file length
+	//update currfd's fcb  
 	fcbPtr = (fcb*)buf;
 	fcbPtr->length = openfilelist[currfd].length;
 	openfilelist[currfd].count = 0;
@@ -368,7 +365,7 @@ void my_ls()
 				(fcbPtr->date) & 0x001f,
 				(fcbPtr->time >> 11),
 				(fcbPtr->time >> 5) & 0x003f,
-				(fcbPtr->time) & 0x001f * 2);//??????????????????????????????????输出日期
+				(fcbPtr->time) & 0x001f * 2);
 		}
 		else {
 			unsigned int length = fcbPtr->length;
@@ -384,7 +381,7 @@ void my_ls()
 				(fcbPtr->date) & 0x001f,
 				(fcbPtr->time >> 11),
 				(fcbPtr->time >> 5) & 0x003f,
-				(fcbPtr->time) & 0x001f * 2);//??????????????????????????????????
+				(fcbPtr->time) & 0x001f * 2);
 		}
 		fcbPtr++;
 	}
@@ -495,9 +492,6 @@ int  my_create(char *filename)
 		return -1;
 	}
 
-	//check open
-	//////////////////////////////////???????????????
-
 	//read to buf
 	char buf[MAX_TEXT_SIZE];
 	openfilelist[currfd].count = 0;
@@ -544,13 +538,13 @@ int  my_create(char *filename)
 	fcbPtr->first = blockNum;
 	fcbPtr->length = 0;
 	fcbPtr->free = 1;
-	time_t rawtime = time(NULL);//////////////////////////////////把这里提取出来
+	time_t rawtime = time(NULL);
 	struct tm* time = localtime(&rawtime);
 	fcbPtr->date = (time->tm_year - 100) * 512 + (time->tm_mon + 1) * 32 + (time->tm_mday);
 	fcbPtr->time = (time->tm_hour) * 2048 + (time->tm_min) * 32 + (time->tm_sec) / 2;
 	do_write(currfd, (char*)fcbPtr, sizeof(fcb), 1);
 
-	//update currfd's fcb
+	//update currfd's fcb  
 	fcbPtr = (fcb*)buf;
 	fcbPtr->length = openfilelist[currfd].length;
 	openfilelist[currfd].count = 0;
@@ -594,10 +588,7 @@ void my_rm(char *filename)
 		return;
 	}
 
-	//check open
-	//////////////////////////////////////////没有检查是否打开
-
-	//clear using block
+	//clear using fcb
 	int blockNum = fcbPtr->first;
 	fat* fat1 = (fat*)(myvhard + BLOCKSIZE);
 	int next = 0;
@@ -626,7 +617,7 @@ void my_rm(char *filename)
 	do_write(currfd, (char*)fcbPtr, sizeof(fcb), 1);
 	openfilelist[currfd].length -= sizeof(fcb);
 
-	//update . file length
+	//update currfd's fcb  
 	fcbPtr = (fcb*)buf;
 	fcbPtr->length = openfilelist[currfd].length;
 	openfilelist[currfd].count = 0;
@@ -642,7 +633,7 @@ int  my_open(char *filename)
 	
 	//check open
 	int i;
-	for (i = 0;i < MAXOPENFILE;i++) {//////////////////////
+	for (i = 0;i < MAXOPENFILE;i++) {
 		if (strcmp(openfilelist[i].filename,fname)==0 && strcmp(openfilelist[i].exname,exname)==0) {
 			cout << "This File has opened.Please Not Open Again!" << endl;
 			return -1;
@@ -751,21 +742,21 @@ int  my_write(int fd)
 		}
 	}
 
-	char text[MAX_TEXT_SIZE] = "\0";//???????????????放在这里有什么用
+	char text[MAX_TEXT_SIZE] = "\0";
 	char textTmp[MAX_TEXT_SIZE] = "\0";
 	cout << "Please input content ending with 'end' ：)" << endl;
 	while (cin>>textTmp) {
 		if (strcmp(textTmp, "end")==0) {
 			break;
 		}
-		textTmp[strlen(textTmp)] = '\n';//??????????????每次输入完都附加一个换行符？
+		textTmp[strlen(textTmp)] = '\n';
 		strcat(text, textTmp);//append content to text
 	}
 
 	int writeLen;
 	text[strlen(text)] = '\0';
 	writeLen= do_write(fd, text, strlen(text) + 1, wstyle);//strlen doesn't  include \0
-	openfilelist[fd].fcbstate = 1;//????????????哪里修改了FCB的内容
+	openfilelist[fd].fcbstate = 1;
 	return writeLen;
 };
 
@@ -803,7 +794,7 @@ int  do_write(int fd, char *text, int len, char wstyle)
 		openfilelist[fd].length = 0;
 	}
 	else if (wstyle == 1) {
-		if (openfilelist[fd].attribute == 1 && openfilelist[fd].length != 0) {//??????????????不删掉末尾的\0会怎么样？
+		if (openfilelist[fd].attribute == 1 && openfilelist[fd].length != 0) {
 			openfilelist[fd].count -= 1;//delete \0
 		}
 	}
@@ -892,17 +883,6 @@ int  do_write(int fd, char *text, int len, char wstyle)
 	//update fat
 	fat* fat1 = (fat*)(myvhard + BLOCKSIZE);
 	int i = blockNum;
-	/*while (true) {
-		if (fat1[i].id != END) {
-			int next = fat1[i].id;
-			fat1[i].id = FREE;
-			i = next;
-		}
-		else {
-			break;
-		}
-	}
-	fat1[blockNum].id = END;*/
 	fat* fat2 = (fat*)(myvhard + 3 * BLOCKSIZE);
 	memcpy(fat2, fat1, BLOCKSIZE);/////////////////
 
@@ -940,7 +920,7 @@ int  do_read(int fd, int len, char *text)
 	while (len > 0) {
 		restRoom = BLOCKSIZE - off;
 		if (restRoom >= len) {
-			memcpy(textPtr, buf + off, len);//buf+off???????????????
+			memcpy(textPtr, buf + off, len);
 			textPtr += len;
 			off += len;
 			openfilelist[fd].count += len;
@@ -960,7 +940,7 @@ int  do_read(int fd, int len, char *text)
 
 			fatPtr = (fat*)(myvhard + BLOCKSIZE) + blockNum;//update
 			blockPtr = myvhard + blockNum*BLOCKSIZE;
-			memcpy(buf,blockPtr, BLOCKSIZE);//?????????????
+			memcpy(buf,blockPtr, BLOCKSIZE);
 		}
 	}
 	free(buf);
