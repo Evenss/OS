@@ -436,7 +436,7 @@ void my_cd(char *dirname)
 					return;
 				}
 				else {
-					currfd = my_close(currfd);//////////////////////////这里文档要求my_close不返回值
+					currfd = my_close(currfd);
 					return;
 				}
 			}
@@ -500,7 +500,7 @@ int  my_create(char *filename)
 	//check same name
 	int i;
 	fcb* fcbPtr = (fcb*)buf;
-	for (i = 0;i < (int)(openfilelist[currfd].length / sizeof(fcb));i++,fcbPtr++) {/////////////////////
+	for (i = 0;i < (int)(openfilelist[currfd].length / sizeof(fcb));i++,fcbPtr++) {
 		if (strcmp(fcbPtr->filename, filename) == 0 && strcmp(fcbPtr->exname,exname)==0) {
 			cout << "There is The Same File!" << endl;
 			openfilelist[fd].topenfile = 0;
@@ -713,7 +713,7 @@ int  my_close(int fd)
 		fcbPtr->length = openfilelist[fd].length;
 		fcbPtr->free = openfilelist[fd].free;
 
-		openfilelist[fatherFd].count = openfilelist[fd].diroff*sizeof(fcb);//??????????????????
+		openfilelist[fatherFd].count = openfilelist[fd].diroff*sizeof(fcb);
 		do_write(fatherFd, (char*)fcbPtr, sizeof(fcb), 1);
 	}
 
@@ -762,7 +762,7 @@ int  my_write(int fd)
 
 int my_read_all(int fd)
 {
-	return (my_read(fd, openfilelist[fd].length));//////////////////////
+	return (my_read(fd, openfilelist[fd].length));
 };
 
 int  my_read(int fd,int len)
@@ -883,6 +883,17 @@ int  do_write(int fd, char *text, int len, char wstyle)
 	//update fat
 	fat* fat1 = (fat*)(myvhard + BLOCKSIZE);
 	int i = blockNum;
+	while (true) {
+		if (fat1[i].id != END) {
+			int next = fat1[i].id;
+			fat1[i].id = FREE;
+			i = next;
+		}
+		else {
+			break;
+		}
+	}
+	fat1[blockNum].id = END;
 	fat* fat2 = (fat*)(myvhard + 3 * BLOCKSIZE);
 	memcpy(fat2, fat1, BLOCKSIZE);/////////////////
 
